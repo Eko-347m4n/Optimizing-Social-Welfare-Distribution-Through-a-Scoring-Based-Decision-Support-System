@@ -1,0 +1,62 @@
+import pandas as pd
+import numpy as np
+
+# Load data nama dari CSV
+names_df = pd.read_csv("indonesian-names.csv")
+names_df = names_df[['name']]  # Select only the 'name' column
+names_df.columns = ['Nama']  # Rename the column to 'Nama'
+
+n = len(names_df)
+
+# 1. Pekerjaan (25% masing-masing)
+jobs = ['PNS', 'Karyawan Swasta', 'Wiraswasta', 'Pelajar', 'Tidak Berkerja']
+pekerjaan = np.tile(jobs, n // 5)
+if len(pekerjaan) < n:
+    pekerjaan = np.append(pekerjaan, np.random.choice(jobs, size=n - len(pekerjaan)))
+np.random.shuffle(pekerjaan)
+
+# 2. DTKS (default)
+dtks = np.random.choice(['V', '-'], size=n, p=[0.75, 0.25])
+
+# 3. Menerima JPS
+jps_programs = ['PKH', 'Kartu Pra Kerja', 'BST', 'Bansos Pemerintah Lainnya']
+jps_menerima = pd.DataFrame('-', index=range(n), columns=jps_programs)
+idx_jps = np.random.choice(n, int(n * 0.75), replace=False)
+
+for i in idx_jps:
+    selected = np.random.choice(jps_programs, np.random.randint(1, 3), replace=False)
+    for program in selected:
+        jps_menerima.loc[i, program] = 'V'
+
+# 4. Belum Menerima JPS
+belum_jps = ['Keluarga Miskin Ekstrem', 'Kehilangan Mata Pencaharian', 'Difabel',
+             'Penyakit Menahun / Kronis', 'Rumah Tangga Tunggal / Lansia']
+belum_menerima = pd.DataFrame('-', index=range(n), columns=belum_jps)
+idx_belum = list(set(range(n)) - set(idx_jps))
+
+for i in idx_belum:
+    selected = np.random.choice(belum_jps, np.random.randint(1, 3), replace=False)
+    for alasan in selected:
+        belum_menerima.loc[i, alasan] = 'V'
+
+# 5. MS/TMS acak
+ms_tms = np.random.choice(['MS', 'TMS'], size=n)
+
+# 6. Perbarui semua jika pekerjaan == PNS
+for i in range(n):
+    if pekerjaan[i] == 'PNS':
+        dtks[i] = '-'
+        jps_menerima.loc[i] = '-'
+        belum_menerima.loc[i] = '-'
+
+# 7. Gabungkan semua
+final_df = pd.concat([
+    names_df,
+    pd.Series(pekerjaan, name='Pekerjaan'),
+    pd.Series(dtks, name='DTKS'),
+    jps_menerima,
+    belum_menerima,
+], axis=1)
+
+# Simpan hasil
+final_df.to_excel("dataset.xlsx", index=False)
