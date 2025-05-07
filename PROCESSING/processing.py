@@ -4,40 +4,39 @@ import numpy as np
 # Load data warga
 df = pd.read_excel('../DATASET/dataset.xlsx')
 
-# Bobot masing-masing kriteria (total = 1.0)
-weights = {
-    'Pekerjaan': 0.4,
-    'DTKS': 0.2,
-    'PKH': 0.3,
-    'Kartu Pra Kerja': 0.1,
-    'BST' : 0.1,
-    'Bansos Pemerintah Lainnya' : 0.1,
-    'Keluarga Miskin Ekstrem' : 0.1,
-    'Kehilangan Mata Pencaharian' : 0.1,
-    'Difabel' : 0.1,
-    'Penyakit Menahun / Kronis' : 0.1,
-    'Rumah Tangga Tunggal / Lansia' : 0.1
-}
+# Inisialisasi nilai awal: 10 jika DTKS = 'V' atau '-', selain itu NaN
+df['Total_Nilai'] = np.where(df['DTKS'] == 'V', 10, np.nan)
+# df['Total_Nilai'] = np.where(df['DTKS'].isin(['V', '-']), 10, np.nan)
 
-# Normalisasi semua kolom sesuai jenis kriteria
-def normalize_column(series):
-    return series / series.max()
+# Kolom yang mengurangi skor
+pengurang = ['PKH', 'Kartu Pra Kerja', 'BST', 'Bansos Pemerintah Lainnya']
 
-for key in weights.keys():
-    if pd.api.types.is_numeric_dtype(df[key]):
-        df[key + '_N'] = normalize_column(df[key])
-    else:
-        # Untuk kolom non-numerik, tetapkan skor normalisasi 0 (atau dapat menerapkan pengkodean)
-        df[key + '_N'] = 0
+# Kolom Pekerjaan mengurangi skor
+pekerjaan_pengurang = ['POLRI', 'PNS', 'TNI']
 
-# Hitung skor akhir
-df['Skor_Akhir'] = 0
-for key, weight in weights.items():
-    df['Skor_Akhir'] += df[key + '_N'] * weight
+# Kolom yang menambah skor
+penambah = [
+    'Keluarga Miskin Ekstrem',
+    'Kehilangan Mata Pencaharian',
+    'Tidak Berkerja',
+    'Difabel',
+    'Penyakit Menahun / Kronis',
+    'Rumah Tangga Tunggal / Lansia'
+]
 
-# Rekomendasi: urutkan dari skor tertinggi
-df_sorted = df.sort_values(by='Skor_Akhir', ascending=False)
+# Proses penambahan skor
+for col in penambah:
+    df.loc[df['Total_Nilai'].notna(), 'Total_Nilai'] += (df[col] == 'V').astype(int)
+    
+# Proses pengurangan skor
+for col in pengurang:
+    df.loc[df['Total_Nilai'].notna(), 'Total_Nilai'] -= (df[col] == 'V').astype(int)
 
-# Tampilkan hasil
-print("=== Rekomendasi Penerima Bantuan ===")
-print(df_sorted[['Nama', 'Skor_Akhir']])
+# Kurangi 10 jika pekerjaan termasuk dalam daftar pekerjaan_pengurang
+df.loc[df['Total_Nilai'].notna() & df['Pekerjaan'].isin(pekerjaan_pengurang), 'Total_Nilai'] -= 10
+
+# Tampilkan nama yang memperoleh nilai >= 10 dan jumlahnya
+df_filtered = df.loc[df['Total_Nilai'] >= 10, ['Nama', 'Total_Nilai']]
+print("\n=== Nama dengan Total Nilai >= 10 ===")
+print(df_filtered)
+print(f"Jumlah baris: {len(df_filtered)}")
