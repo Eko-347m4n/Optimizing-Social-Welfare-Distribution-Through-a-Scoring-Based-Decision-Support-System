@@ -9,14 +9,17 @@ names_df.columns = ['Nama']  # Rename the column to 'Nama'
 n = len(names_df)
 
 # 1. Pekerjaan (25% masing-masing)
-jobs = ['PNS', 'Karyawan Swasta', 'Wiraswasta', 'Pelajar', 'Tidak Berkerja']
-pekerjaan = np.tile(jobs, n // 5)
-if len(pekerjaan) < n:
-    pekerjaan = np.append(pekerjaan, np.random.choice(jobs, size=n - len(pekerjaan)))
+jobs = ['PNS', 'TNI', 'POLRI', 'Buruh']
+pelajar_count = int(n * 0.10)
+other_count = n - pelajar_count
+other_jobs = np.tile(jobs, other_count // len(jobs))
+if len(other_jobs) < other_count:
+    other_jobs = np.append(other_jobs, np.random.choice(jobs, size=other_count - len(other_jobs)))
+pekerjaan = np.append(other_jobs, ['Pelajar'] * pelajar_count)
 np.random.shuffle(pekerjaan)
 
 # 2. DTKS (default)
-dtks = np.random.choice(['V', '-'], size=n, p=[0.75, 0.25])
+dtks = np.random.choice(['V', '-'], size=n, p=[0.25, 0.75])
 
 # 3. Menerima JPS
 jps_programs = ['PKH', 'Kartu Pra Kerja', 'BST', 'Bansos Pemerintah Lainnya']
@@ -29,7 +32,7 @@ for i in idx_jps:
         jps_menerima.loc[i, program] = 'V'
 
 # 4. Belum Menerima JPS
-belum_jps = ['Keluarga Miskin Ekstrem', 'Kehilangan Mata Pencaharian', 'Difabel',
+belum_jps = ['Keluarga Miskin Ekstrem', 'Kehilangan Mata Pencaharian', 'Tidak Berkerja', 'Difabel',
              'Penyakit Menahun / Kronis', 'Rumah Tangga Tunggal / Lansia']
 belum_menerima = pd.DataFrame('-', index=range(n), columns=belum_jps)
 idx_belum = list(set(range(n)) - set(idx_jps))
@@ -39,15 +42,17 @@ for i in idx_belum:
     for alasan in selected:
         belum_menerima.loc[i, alasan] = 'V'
 
-# 5. MS/TMS acak
-ms_tms = np.random.choice(['MS', 'TMS'], size=n)
-
-# 6. Perbarui semua jika pekerjaan == PNS
+# 5. Perbarui semua jika pekerjaan == PNS, TNI, POLRI
 for i in range(n):
-    if pekerjaan[i] == 'PNS':
+    if pekerjaan[i] in ['PNS', 'TNI', 'POLRI']:
         dtks[i] = '-'
         jps_menerima.loc[i] = '-'
         belum_menerima.loc[i] = '-'
+
+# 6. Perbarui semua jika menerima PKH == Terdata DTKS
+for i in range(n):
+    if jps_menerima.loc[i, 'PKH'] == 'V':
+        dtks[i] = 'V'
 
 # 7. Gabungkan semua
 final_df = pd.concat([
