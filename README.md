@@ -43,12 +43,12 @@ Pastikan Anda memiliki:
 
 Instalasi dependensi:
 
-```bash
-pip install pandas numpy scikit-learn matplotlib openpyxl
+bash
+`pip install pandas numpy scikit-learn matplotlib openpyxl`
 
 Lalu jalankan:
 `cd PROCESSING`
-`python3 ID3.py`
+`python3 ID3.py` sesuaikan dengan algoritma apa yang ingin digunakan
 
 ## 🧠 Algoritma yang Digunakan
 1. ID3 Decision Tree
@@ -59,10 +59,12 @@ Root node bisa dikustom sesuai skenario analisis (contoh: memulai dari Rumah Tan
 2. Hybrid SAW (Simple Additive Weighting)
 Menggunakan Total_Nilai untuk menentukan peringkat penerima bantuan.
 
-Metode: normalisasi nilai → dikalikan bobot → skor akhir → urutan ranking.
+Metode: normalisasi nilai → dikalikan bobot → skor akhir → urutan ranking.'
 
-📌 Catatan
-Proyek ini dapat digunakan untuk skenario nyata, analisis sosial, maupun tugas akhir/skripsi.
+---
+
+## 📌 Catatan
+Proyek ini dapat digunakan untuk skenario nyata, analisis sosial.
 
 Namun, pastikan Anda:
 
