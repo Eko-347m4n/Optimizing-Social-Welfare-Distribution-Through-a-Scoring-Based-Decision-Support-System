@@ -1,6 +1,6 @@
 # 🎯 Sistem Pendukung Keputusan (SPK) Bantuan Sosial
 
-Proyek ini merupakan implementasi Sistem Pendukung Keputusan (SPK) berbasis klasifikasi dan perangkingan penerima bantuan sosial. SPK ini menggabungkan algoritma **ID3 (Decision Tree) K-NN (K-Nearest Neighbors)** dan **Hybrid SAW (Simple Additive Weighting)** untuk menentukan dan memprioritaskan siapa saja yang layak menerima bantuan berdasarkan sejumlah indikator sosial.
+Proyek ini merupakan implementasi Sistem Pendukung Keputusan (SPK) berbasis klasifikasi dan perangkingan penerima bantuan sosial. SPK ini menggabungkan algoritma **ID3 (Decision Tree), K-NN (K-Nearest Neighbors)** dan **Hybrid SAW (Simple Additive Weighting)** untuk menentukan dan memprioritaskan siapa saja yang layak menerima bantuan berdasarkan sejumlah indikator sosial.
 
 ---
 
