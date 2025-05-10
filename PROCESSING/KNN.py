@@ -1,8 +1,7 @@
 import pandas as pd
 pd.set_option('future.no_silent_downcasting', True)
 import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.tree import DecisionTreeClassifier, export_text, plot_tree
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score
 from sklearn.utils import resample
@@ -37,7 +36,7 @@ for col in pengurang:
 df['Layak'] = df['Total_Nilai'].apply(lambda x: 'Ya' if x >= 10 else 'Tidak')
 
 # ===============================
-# 2. Klasifikasi ID3 + Oversampling
+# 2. Klasifikasi KNN + Oversampling
 # ===============================
 features = penambah + pengurang
 X = df[features].replace({'V': 1, '-': 0, np.nan: 0}).infer_objects(copy=False)
@@ -64,19 +63,15 @@ X_train, X_test, y_train, y_test = train_test_split(
     X_balanced, y_balanced, test_size=0.2, random_state=42
 )
 
-# Latih model ID3 (Decision Tree)
-clf = DecisionTreeClassifier(criterion='entropy', max_depth=4, random_state=42)
+# Latih model KNN
+clf = KNeighborsClassifier(n_neighbors=5)
 clf.fit(X_train, y_train)
 y_pred = clf.predict(X_test)
 
 # Evaluasi
-print("=== EVALUASI MODEL ID3 ===")
+print("=== EVALUASI MODEL KNN ===")
 print("Akurasi:", accuracy_score(y_test, y_pred))
 print(classification_report(y_test, y_pred))
-
-# Tampilkan struktur pohon keputusan
-print("\n=== STRUKTUR POHON KEPUTUSAN ===")
-print(export_text(clf, feature_names=features))
 
 # ===============================
 # 3. Hybrid SAW Ranking
@@ -91,11 +86,3 @@ df_saw_passing = df_saw[df_saw['Total_Nilai'] >= 10]
 
 print("\n=== RANKING DATA DENGAN PASSING GRADE 10 (HYBRID SAW) ===")
 print(df_saw_passing[['Nama', 'Total_Nilai', 'Skor_Akhir']])
-
-# ===============================
-# 4. Visualisasi Pohon Keputusan
-# ===============================
-plt.figure(figsize=(20, 10))
-plot_tree(clf, feature_names=features, class_names=['Tidak', 'Ya'], filled=True)
-plt.title("Pohon Keputusan - ID3")
-plt.show()
