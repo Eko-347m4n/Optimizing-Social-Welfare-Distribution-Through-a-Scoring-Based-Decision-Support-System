@@ -31,7 +31,7 @@ Folder ini berisi dataset utama (`dataset.xlsx`) yang telah disiapkan dengan ske
   Implementasi **algoritma ID3** untuk klasifikasi kelayakan bantuan dan **Hybrid SAW** untuk perangkingan. Menghasilkan output evaluasi, struktur pohon, dan hasil ranking.
 
 - `KNN.py` 
-  (Opsional) Untuk pengujian alternatif algoritma klasifikasi menggunakan K-Nearest Neighbors jika diperlukan.
+   Untuk pengujian alternatif algoritma klasifikasi menggunakan K-Nearest Neighbors jika diperlukan.
 
 ---
 
@@ -69,9 +69,6 @@ Namun, pastikan Anda:
 Menyesuaikan kategori indikator sosial sesuai konteks lokal.
 
 Memperbarui dataset (dataset.xlsx) agar valid dan relevan.
-
-📞 Kontak
-Untuk pertanyaan atau kolaborasi lebih lanjut, silakan hubungi pengembang proyek ini.
 
 
 
